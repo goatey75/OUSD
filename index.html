@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Oakland School Health</title>
+
+<style type="text/css">
+	#wrap {
+	border-color:#dddddd;	
+	width:994px;
+	margin:0 auto;
+	background:#ffffff;
+	}
+
+	#header {
+	padding:5px 10px;
+	background:#ffffff;
+	color:#222222;
+	}
+
+	h1 {
+	font-family:"Trebuchet MS";
+	margin:0;
+	}
+
+	#nav {
+	padding:5px 10px;
+	background:#ffffff;
+	}
+
+	#map_canvas {
+    border: 2px solid;
+	float:left;
+	width:900px;
+	height:650px;
+	padding:10px;
+	background:#9c9;
+	}
+
+	h2 {
+	margin:0 0 1em;
+	}
+
+	#sidebar {
+	border:1px solid;
+	border-color:#d9d9d9;	
+	float:right;
+	width:202px;
+	padding:10px;
+	background:#f5f5f5;
+	}
+
+	#footer {
+	clear:both;
+	padding:5px 10px;
+	background:#ffffff;
+	color:white;
+	}
+
+	#footer p {
+	margin:0;
+	}
+
+</style>
+
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+
+<script type="text/javascript">
+
+var map;
+var geocoder;
+var bythLayer = null;
+var boundaryLayer = null;
+var shippinglanesLayer = null;
+
+function initialize() {
+	geocoder = new google.maps.Geocoder();
+	var myLatlng = new google.maps.LatLng(37.753, -122.1);
+	var myOptions = {
+		zoom: 11,
+		center: myLatlng,
+		mapTypeId: google.maps.MapTypeId.TERRAIN
+	}
+	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+	cityLayer=new google.maps.KmlLayer("http://userwww.sfsu.edu/~gehry/schools4.kmz", {preserveViewport: true});
+	boundaryLayer=new google.maps.KmlLayer("http://userwww.sfsu.edu/~gehry/schools4.kmz", {preserveViewport: true});
+	//geocoder = new GClientGeocoder();
+}
+
+
+function toggleBoundaries() {
+	var boundbtn = document.getElementById('boundaryButton');
+		if (boundbtn.checked==true){ 
+			boundaryLayer.setMap(map);
+		}
+		else{
+			boundaryLayer.setMap(this.clicked ? map:null);
+		}
+}
+
+function toggleCities() {
+	var citybtn = document.getElementById('citiesButton');
+		if (citybtn.checked==true){
+			cityLayer.setMap(map);
+		}
+		else{
+			cityLayer.setMap(this.clicked ? map:null);
+		}
+}
+
+  function codeAddress() {
+    var address = document.getElementById("address").value;
+    geocoder.geocode( { 'address': address}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        map.setCenter(results[0].geometry.location);
+        var marker = new google.maps.Marker({
+            map: map,
+            position: results[0].geometry.location
+        });
+      } else {
+        alert("Geocode was not successful for the following reason: " + status);
+      }
+    });
+  }
+
+</script>
+</head>
+
+<body onload="initialize()">
+<div id="wrap">
+<div id="header"> <h1> Oakland </h1> </div>
+   <div id="nav"><strong></>School Health</strong></div>
+   <div id="map_canvas"></div>
+   <div id="sidebar">
+<b>Select Layers</b><br />top layer = last clicked
+   <table>
+
+    <tr>
+      <td><input onclick="toggleBoundaries()" type="checkbox" name="" id="boundaryButton" value="Boundaries"/></td>
+      <td align="left">School Health</td>
+    </tr>
+    <tr>
+      <td><input onclick="toggleCities()" type="checkbox" name="" id="tractsButton" value="tracts"/></td>
+      <td align="left">Schools</td>
+
+    </tr>
+
+    <tr>
+      <td><input onclick="toggleOther()" type="checkbox" name="" id="otherButton" value="other"/></td>
+      <td align="left">Other</td>
+    </tr>    
+  </table>
+
+
+  <div>
+
+  <br />Search for a specific location:
+    <input id="address" type="textbox" value="Oakland, CA">
+
+    <input type="button" value="geocode" onclick="codeAddress()">
+  </div>
+   </div>
+   <div id="footer">
+     <p></p>
+   </div>
+
+</div>
+
+</body>
+</html>
